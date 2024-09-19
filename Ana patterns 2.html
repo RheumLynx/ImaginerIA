@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultor de Patrones ANA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #resultado, #abreviaturas {
+            margin-top: 20px;
+            background-color: #e7f3fe;
+            border: 1px solid #c8e1ff;
+            padding: 15px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Consultor de Patrones ANA</h1>
+        <input type="text" id="patronInput" placeholder="Introduce el patrón AC (por ejemplo, AC-1)">
+        <button onclick="consultarPatron()">Consultar</button>
+        <div id="resultado"></div>
+        <div id="abreviaturas"></div>
+    </div>
+
+    <script>
+        const patrones = {
+            "AC-1": {
+                patron: "Nuclear homogéneo (difuso)",
+                ag: "DsDNA, nucleosoma, histonas",
+                enfermedades: "LES, lupus por fármacos, artritis idiopática juvenil"
+            },
+            "AC-2": {
+                patron: "Nuclear (nuclear punteado fino denso)",
+                ag: "DFS70/LEDGF",
+                enfermedades: "Raro en Sjogren (Sj), LES, y Esclerosis sistémica (ES)"
+            },
+            "AC-3": {
+                patron: "Centrómero (cinetocoro)",
+                ag: "CENP-A/B (c)",
+                enfermedades: "CBP, ES cutánea limitada"
+            },
+            "AC-4": {
+                patron: "Nuclear granular fino (nuclear punteado fino)",
+                ag: "Ro, La, Mi2, TIF1gamma, TIF1beta, Ku",
+                enfermedades: "Sj, LES, dermatomiositis"
+            },
+            "AC-5": {
+                patron: "Nuclear granular grueso/grande (espliceosoma, matriz nuclear)",
+                ag: "hnRNP, U1RNP, Sm, ARN polimerasa III",
+                enfermedades: "EMTC. LES, ES"
+            },
+            "AC-6": {
+                patron: "Gránulos nucleares múltiples",
+                ag: "Sp-100, proteínas PML, MJ/NXP-2",
+                enfermedades: "CBP, EAS, dermatomiositis"
+            },
+            "AC-7": {
+                patron: "Gránulos nucleares escasos (cuerpos de Cajal)",
+                ag: "P80-coilina, SMN",
+                enfermedades: "SSj, LES, ES, PM, individuos asintomáticos"
+            },
+            "AC-8": {
+                patron: "Nucleolar homogéneo",
+                ag: "PM/Scl-75, PM/Scl-100, Th/To, B23/nucleofosmina, nucleolina, No55/SC65",
+                enfermedades: "ES, ES/PM overlap"
+            },
+            "AC-9": {
+                patron: "Nucleolar grumoso",
+                ag: "U3snoRNP/fibrilarina",
+                enfermedades: "ES"
+            },
+            "AC-10": {
+                patron: "Nucleolar granular",
+                ag: "ARN polimerasa I, hUBF/NOR-90",
+                enfermedades: "ES, SSj"
+            },
+            "AC-11": {
+                patron: "Membrana nuclear lisa",
+                ag: "Láminas A,B,C, o proteínas asociadas con las láminas",
+                enfermedades: "LES, SSj, artritis seronegativa"
+            },
+            "AC-12": {
+                patron: "Membrana nuclear granular",
+                ag: "Complejo de proteínas de los poros nucleares. Ej. gp210",
+                enfermedades: "CPB"
+            },
+            "AC-13": {
+                patron: "Parecido a PCNA",
+                ag: "Antígeno nuclear de células proliferativas",
+                enfermedades: "LES, otras enfermedades"
+            },
+            "AC-14": {
+                patron: "Parecido a CENP-F (MSA-3, NSp-II)",
+                ag: "Proteína del centrómero F (CENP-F)",
+                enfermedades: "Cáncer, otras enfermedades"
+            },
+            "AC-15": {
+                patron: "Citoplasmático fibrilar linear",
+                ag: "Actina, miosina no muscular",
+                enfermedades: "Enfermedad mixta del tejido conjuntivo, hepatitis crónica activa, miastenia gravis, enfermedad de Crohn, CBP, hemodiálisis de largo plazo, raro en EAS"
+            },
+            "AC-16": {
+                patron: "Citoplasmático fibrilar filamentar",
+                ag: "Vimentina, citoqueratina, tropomiosina",
+                enfermedades: "Enfermedades infecciosas o inflamatorias, hemodiálisis de largo plazo, enfermedad hepática por alcohol, EAS, Psoriasis y sujetos sanos"
+            },
+            "AC-17": {
+                patron: "Citoplasmático fibrilar segmentado",
+                ag: "Actina alfa, vinculina",
+                enfermedades: "Miastenia gravis, enfermedad de Crohn, colitis ulcerosa"
+            },
+            "AC-18": {
+                patron: "Citoplasmático granular discreto /parecido a cuerpos GW",
+                ag: "GW182, Su/Ago2",
+                enfermedades: "CBP, EAS, enfermedades neurológicas y autoinmunes"
+            },
+            "AC-19": {
+                patron: "Citoplasmático granular fino denso (homogéneo)",
+                ag: "PL-7, PL-12, Proteína P ribosomal",
+                enfermedades: "Síndrome antisintetasa, PM/DM, LES, LES juvenil LES neuropsiquiátrico"
+            },
+            "AC-20": {
+                patron: "Citoplasmático granular fino (punteado)",
+                ag: "Jo-1/ sintetasa del Histidil del ARNt",
+                enfermedades: "Síndrome antisintetasa, PM/DM, ES limitada, derrame pleural idiopático"
+            },
+            "AC-21": {
+                patron: "Citoplasmático reticular /AAM (parecido a mitocondrial)",
+                ag: "PDC-E2/M2, BCOADC-E2, OGDC-E2, subunidad E1alfa de PDC, E3BP/proteína X",
+                enfermedades: "Común en CBP, ES generalizada, raro en otras EAS."
+            },
+            "AC-22": {
+                patron: "Citoplasmático granular Polar/parecido a aparato de Golgi",
+                ag: "Giantina/macrogolgina, golgin-95/GM130, Golgina-160, golgina-97, golgina 245",
+                enfermedades: "Raro en SSj, LES, AR, EMTC, PAG, Ataxia cerebelar idiopática, degeneración cerebelar paraneoplásica, infecciones virales"
+            },
+            "AC-23": {
+                patron: "Bastones y anillos",
+                ag: "IMPDH2",
+                enfermedades: "Algunos pacientes infectados por VHC tras tratamiento con IFN/ribavirina; raro en LES, Hashimoto y controles sanos"
+            },
+            "AC-24": {
+                patron: "Centrosoma (centriolos)",
+                ag: "Pericentrina, nineína, Cep250, Cep110",
+                enfermedades: "Raro en ES, fenómeno de Raynaud, infecciones (virales y por micoplasmas)"
+            },
+            "AC-25": {
+                patron: "Huso mitótico",
+                ag: "HsEg5",
+                enfermedades: "Raro en SSj.., LES, otras conectivopatías"
+            },
+            "AC-26": {
+                patron: "Parecido a NuMA",
+                ag: "NuMA",
+                enfermedades: "SSj, LES, otros"
+            },
+            "AC-27": {
+                patron: "Puente intercelular (cuerpo medio)",
+                ag: "-",
+                enfermedades: "Raro en ES, fenómeno de Raynaud, tumores malignos"
+            },
+            "AC-28": {
+                patron: "Envoltura cromosómica mitótica",
+                ag: "Histona H3 modificada, MCA-1",
+                enfermedades: "Raro en lúpus discoide (LED), leucemia linfocítica crónica (LLC), SSj y polimialgia reumática."
+            }
+        };
+
+        const abreviaturas = {
+            "AR": "Artritis reumatoide",
+            "CBP": "Cirrosis biliar primaria",
+            "DM": "Dermatomiositis",
+            "EAS": "Enfermedad autoinmune sistémica",
+            "EMTC": "Enfermedad mixta del tejido conectivo",
+            "ES": "Esclerosis sistémica",
+            "LES": "Lupus eritematoso sistémico",
+            "PM": "Polimiositis",
+            "SSj": "Síndrome de Sjögren",
+            "Sj": "Síndrome de Sjögren"
+        };
+
+        function consultarPatron() {
+            const patron = document.getElementById('patronInput').value.toUpperCase();
+            const resultado = document.getElementById('resultado');
+            const abreviaturasDiv = document.getElementById('abreviaturas');
+            
+            if (patrones[patron]) {
+                const info = patrones[patron];
+                resultado.innerHTML = `
+                    <h2>Patrón ${patron}</h2>
+                    <p><strong>Tipo de patrón:</strong> ${info.patron}</p>
+                    <p><strong>Antígeno asociado:</strong> ${info.ag}</p>
+                    <p><strong>Enfermedades asociadas:</strong> ${info.enfermedades}</p>
+                `;
+
+                // Buscar abreviaturas en el resultado
+                const abreviaturasEncontradas = new Set();
+                for (const [abreviatura, significado] of Object.entries(abreviaturas)) {
+                    if (info.enfermedades.includes(abreviatura)) {
+                        abreviaturasEncontradas.add(`<li><strong>${abreviatura}</strong>: ${significado}</li>`);
+                    }
+                }
+
+                if (abreviaturasEncontradas.size > 0) {
+                    abreviaturasDiv.innerHTML = `
+                        <h3>Abreviaturas utilizadas:</h3>
+                        <ul>${Array.from(abreviaturasEncontradas).join('')}</ul>
+                    `;
+                } else {
+                    abreviaturasDiv.innerHTML = '';
+                }
+            } else {
+                resultado.innerHTML = `<p>No se encontró información para el patrón ${patron}.</p>`;
+                abreviaturasDiv.innerHTML = '';
+            }
+        }
+    </script>
+</body>
+</html>
